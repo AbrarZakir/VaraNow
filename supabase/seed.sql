@@ -1,0 +1,3 @@
+-- Optional seed data for VaraNow
+-- Run after applying migrations (e.g. supabase db reset or supabase migration up)
+-- Example: INSERT into profiles, properties, etc. for local/dev data.

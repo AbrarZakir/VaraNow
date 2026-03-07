@@ -1,0 +1,10 @@
+// Optional: NextAuth route — use if needed alongside Supabase Auth
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ message: "Auth route placeholder" });
+}
+
+export async function POST() {
+  return NextResponse.json({ message: "Auth route placeholder" });
+}
