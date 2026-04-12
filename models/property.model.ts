@@ -19,6 +19,7 @@ export interface ListPublicFilters {
   lat?: number;
   lng?: number;
   radiusKm?: number;
+  location?: string;
   limit?: number;
   offset?: number;
 }
@@ -136,6 +137,7 @@ export async function listPublic(
     maxPrice,
     minBedrooms,
     minBathrooms,
+    location,
     lat,
     lng,
     radiusKm,
@@ -156,6 +158,9 @@ export async function listPublic(
   if (maxPrice != null) query = query.lte("price", maxPrice);
   if (minBedrooms != null) query = query.gte("bedrooms", minBedrooms);
   if (minBathrooms != null) query = query.gte("bathrooms", minBathrooms);
+  if (location) {
+    query = query.or(`title.ilike.%${location}%,address.ilike.%${location}%`);
+  }
 
   if (lat != null && lng != null && radiusKm != null && radiusKm > 0) {
     const latDelta = radiusKm / 111;

@@ -28,16 +28,33 @@ export default function PropertyFilters() {
     const minPrice = (data.get("minPrice") as string) || "";
     const maxPrice = (data.get("maxPrice") as string) || "";
     const minBedrooms = (data.get("minBedrooms") as string) || "";
+    const minBathrooms = (data.get("minBathrooms") as string) || "";
+    const location = (data.get("location") as string) || "";
     if (type) params.set("type", type);
     if (category) params.set("category", category);
+    if (location) params.set("location", location);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (minBedrooms) params.set("minBedrooms", minBedrooms);
+    if (minBathrooms) params.set("minBathrooms", minBathrooms);
     router.push(`/search?${params.toString()}`);
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
+      <div>
+        <label htmlFor="filter-location" className="mb-1 block text-sm font-medium">
+          Location
+        </label>
+        <input
+          id="filter-location"
+          name="location"
+          type="text"
+          placeholder="City, neighborhood..."
+          defaultValue={searchParams.get("location") ?? ""}
+          className="w-40 rounded border border-gray-300 px-3 py-2"
+        />
+      </div>
       <div>
         <label htmlFor="filter-type" className="mb-1 block text-sm font-medium">
           Type
@@ -108,6 +125,19 @@ export default function PropertyFilters() {
           type="number"
           min={0}
           defaultValue={searchParams.get("minBedrooms") ?? ""}
+          className="w-20 rounded border border-gray-300 px-3 py-2"
+        />
+      </div>
+      <div>
+        <label htmlFor="filter-bathrooms" className="mb-1 block text-sm font-medium">
+          Min baths
+        </label>
+        <input
+          id="filter-bathrooms"
+          name="minBathrooms"
+          type="number"
+          min={0}
+          defaultValue={searchParams.get("minBathrooms") ?? ""}
           className="w-20 rounded border border-gray-300 px-3 py-2"
         />
       </div>
