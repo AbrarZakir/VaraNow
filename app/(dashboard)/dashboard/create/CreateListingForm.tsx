@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState } from "react-dom";
 import { createListingAction, type CreateListingState } from "@/app/actions/listing";
 
@@ -7,6 +8,19 @@ const initialState: CreateListingState = {};
 
 export default function CreateListingForm() {
   const [state, formAction] = useFormState(createListingAction, initialState);
+  const [imageUrls, setImageUrls] = useState<string[]>([""]);
+
+  function addImageField() {
+    setImageUrls((prev) => [...prev, ""]);
+  }
+
+  function removeImageField(index: number) {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateImageUrl(index: number, value: string) {
+    setImageUrls((prev) => prev.map((url, i) => (i === index ? value : url)));
+  }
 
   return (
     <form action={formAction} className="max-w-xl space-y-4">
@@ -167,6 +181,41 @@ export default function CreateListingForm() {
           rows={4}
           className="w-full rounded border border-gray-300 px-3 py-2"
         />
+      </div>
+      <div>
+        <label className="mb-1 block text-sm font-medium">
+          Image URLs
+        </label>
+        <div className="space-y-2">
+          {imageUrls.map((url, index) => (
+            <div key={index} className="flex gap-2">
+              <input
+                name="image_urls"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                value={url}
+                onChange={(e) => updateImageUrl(index, e.target.value)}
+                className="w-full rounded border border-gray-300 px-3 py-2"
+              />
+              {imageUrls.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeImageField(index)}
+                  className="rounded border border-gray-300 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addImageField}
+          className="mt-2 text-sm text-blue-600 hover:underline"
+        >
+          + Add another image
+        </button>
       </div>
       <button
         type="submit"

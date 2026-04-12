@@ -35,13 +35,15 @@ export async function removeBookmark(
 
 export async function getSavedList(
   supabase: SupabaseClient,
-  userId: string
-): Promise<{ data: SavedListing[]; error: string | null }> {
-  const { data: bookmarks, error: bError } = await bookmarkModel.listByUserId(
+  userId: string,
+  options: { limit?: number; offset?: number } = {}
+): Promise<{ data: SavedListing[]; count: number; error: string | null }> {
+  const { data: bookmarks, count, error: bError } = await bookmarkModel.listByUserId(
     supabase,
-    userId
+    userId,
+    options
   );
-  if (bError) return { data: [], error: (bError as Error).message };
+  if (bError) return { data: [], count: 0, error: (bError as Error).message };
 
   const listings: SavedListing[] = [];
   for (const b of bookmarks) {
@@ -51,7 +53,7 @@ export async function getSavedList(
     );
     if (property) listings.push({ property, bookmarkId: b.id });
   }
-  return { data: listings, error: null };
+  return { data: listings, count, error: null };
 }
 
 export async function isBookmarked(

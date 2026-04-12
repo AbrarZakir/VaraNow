@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { getPropertyDetailAction } from "@/app/actions/property";
 import { isBookmarkedAction } from "@/app/actions/bookmark";
 import PropertyGallery from "@/components/property/PropertyGallery";
@@ -12,6 +13,11 @@ interface PropertyPageProps {
 export default async function PropertyDetailPage({ params }: PropertyPageProps) {
   const { data, error } = await getPropertyDetailAction(params.id);
   if (error || !data) notFound();
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: bookmarked } = await isBookmarkedAction(params.id);
 
@@ -27,7 +33,11 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
           </h1>
           <p className="text-gray-600">{property.address}</p>
         </div>
-        <BookmarkButton propertyId={property.id} initialBookmarked={bookmarked} />
+        <BookmarkButton
+          propertyId={property.id}
+          initialBookmarked={bookmarked}
+          isAuthenticated={!!user}
+        />
       </div>
 
       <div className="mb-6">

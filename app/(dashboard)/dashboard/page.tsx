@@ -12,7 +12,9 @@ export default async function DashboardPage() {
   ]);
 
   const myListings = listingsResult.data ?? [];
+  const listingsCount = listingsResult.count ?? myListings.length;
   const saved = savedResult.data ?? [];
+  const savedCount = savedResult.count ?? saved.length;
   const notifications = notificationsResult.data ?? [];
 
   return (
@@ -27,7 +29,7 @@ export default async function DashboardPage() {
             </Link>
           </h2>
           <p className="text-sm text-gray-600">
-            {myListings.length} {myListings.length === 1 ? "listing" : "listings"}.
+            {listingsCount} {listingsCount === 1 ? "listing" : "listings"}.
           </p>
           <Link
             href="/dashboard/create"
@@ -43,7 +45,7 @@ export default async function DashboardPage() {
             </Link>
           </h2>
           <p className="text-sm text-gray-600">
-            {saved.length} saved {saved.length === 1 ? "property" : "properties"}.
+            {savedCount} saved {savedCount === 1 ? "property" : "properties"}.
           </p>
         </section>
         <section>

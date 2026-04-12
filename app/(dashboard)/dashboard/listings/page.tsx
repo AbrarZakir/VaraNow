@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { getMyListingsAction } from "@/app/actions/property";
 import PropertyCard from "@/components/property/PropertyCard";
+import Pagination from "@/components/layout/Pagination";
 
-export default async function ListingsPage() {
-  const { data: listings, error } = await getMyListingsAction();
+const PAGE_SIZE = 12;
+
+interface ListingsPageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function ListingsPage({ searchParams }: ListingsPageProps) {
+  const page =
+    typeof searchParams.page === "string"
+      ? Math.max(1, Number(searchParams.page))
+      : 1;
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const { data: listings, count, error } = await getMyListingsAction({
+    limit: PAGE_SIZE,
+    offset,
+  });
   const properties = listings ?? [];
+  const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
 
   return (
     <div>
@@ -25,11 +42,18 @@ export default async function ListingsPage() {
       {properties.length === 0 ? (
         <p className="text-gray-500">You have no listings yet.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((p) => (
-            <PropertyCard key={p.id} property={p} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {properties.map((p) => (
+              <PropertyCard key={p.id} property={p} />
+            ))}
+          </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            basePath="/dashboard/listings"
+          />
+        </>
       )}
     </div>
   );

@@ -28,10 +28,17 @@ export async function createListingAction(
     bathrooms: Number(formData.get("bathrooms")) || 0,
   };
 
+  const imageUrls: string[] = [];
+  for (const val of formData.getAll("image_urls")) {
+    const trimmed = (val as string).trim();
+    if (trimmed) imageUrls.push(trimmed);
+  }
+
   const { data, error } = await propertyController.createListing(
     supabase,
     user.id,
-    params
+    params,
+    imageUrls
   );
   if (error) return { error };
   if (data) redirect(`/property/${data.id}`);

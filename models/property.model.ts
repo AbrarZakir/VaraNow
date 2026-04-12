@@ -107,14 +107,21 @@ export async function listForMap(
 
 export async function listByOwner(
   supabase: SupabaseClient,
-  ownerId: string
-): Promise<{ data: Property[]; error: Error | null }> {
-  const { data, error } = await supabase
+  ownerId: string,
+  options: { limit?: number; offset?: number } = {}
+): Promise<{ data: Property[]; count: number; error: Error | null }> {
+  const { limit = 12, offset = 0 } = options;
+  const { data, error, count } = await supabase
     .from("properties")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("owner_id", ownerId)
-    .order("created_at", { ascending: false });
-  return { data: (data ?? []) as Property[], error: error as Error | null };
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+  return {
+    data: (data ?? []) as Property[],
+    count: count ?? 0,
+    error: error as Error | null,
+  };
 }
 
 /** Public list: only available and non-expired; optional filters and pagination. */

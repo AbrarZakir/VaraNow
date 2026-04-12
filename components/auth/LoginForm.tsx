@@ -19,7 +19,9 @@ export function LoginForm() {
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.redirectTo) {
-          window.location.href = data.redirectTo;
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get("redirect");
+          window.location.href = redirect || data.redirectTo;
           return;
         }
         setError(data.error ?? (res.ok ? "Invalid response" : "Sign in failed"));

@@ -21,7 +21,8 @@ export type ListForSearchFilters = ListPublicFilters;
 export async function createListing(
   supabase: SupabaseClient,
   userId: string,
-  params: Record<string, unknown>
+  params: Record<string, unknown>,
+  imageUrls: string[] = []
 ): Promise<{ data: Property | null; error: string | null }> {
   const parsed = createListingSchema.safeParse(params);
   if (!parsed.success) {
@@ -43,6 +44,13 @@ export async function createListing(
   };
 
   const { data, error } = await propertyModel.create(supabase, createParams);
+
+  if (data && imageUrls.length > 0) {
+    for (let i = 0; i < imageUrls.length; i++) {
+      await propertyImageModel.add(supabase, data.id, imageUrls[i], i);
+    }
+  }
+
   return {
     data,
     error: error?.message ?? null,
@@ -140,8 +148,9 @@ export async function listForMap(
 
 export async function listByOwner(
   supabase: SupabaseClient,
-  ownerId: string
-): Promise<{ data: Property[]; error: string | null }> {
-  const { data, error } = await propertyModel.listByOwner(supabase, ownerId);
-  return { data, error: (error as Error)?.message ?? null };
+  ownerId: string,
+  options: { limit?: number; offset?: number } = {}
+): Promise<{ data: Property[]; count: number; error: string | null }> {
+  const { data, count, error } = await propertyModel.listByOwner(supabase, ownerId, options);
+  return { data, count, error: (error as Error)?.message ?? null };
 }

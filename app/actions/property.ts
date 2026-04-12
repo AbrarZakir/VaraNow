@@ -24,9 +24,9 @@ export async function searchListingsAction(filters: ListPublicFilters = {}) {
   return propertyController.listForSearch(supabase, filters);
 }
 
-export async function getMyListingsAction() {
+export async function getMyListingsAction(options: { limit?: number; offset?: number } = {}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { data: [], error: "Not authenticated" };
-  return propertyController.listByOwner(supabase, user.id);
+  if (!user) return { data: [], count: 0, error: "Not authenticated" };
+  return propertyController.listByOwner(supabase, user.id, options);
 }

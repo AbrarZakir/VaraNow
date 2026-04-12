@@ -30,14 +30,21 @@ export async function remove(
 
 export async function listByUserId(
   supabase: SupabaseClient,
-  userId: string
-): Promise<{ data: Bookmark[]; error: Error | null }> {
-  const { data, error } = await supabase
+  userId: string,
+  options: { limit?: number; offset?: number } = {}
+): Promise<{ data: Bookmark[]; count: number; error: Error | null }> {
+  const { limit = 12, offset = 0 } = options;
+  const { data, error, count } = await supabase
     .from("bookmarks")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  return { data: (data ?? []) as Bookmark[], error: error as Error | null };
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+  return {
+    data: (data ?? []) as Bookmark[],
+    count: count ?? 0,
+    error: error as Error | null,
+  };
 }
 
 export async function isBookmarked(

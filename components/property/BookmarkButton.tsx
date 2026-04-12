@@ -1,24 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { addBookmarkAction, removeBookmarkAction } from "@/app/actions/bookmark";
-import Link from "next/link";
 
 interface BookmarkButtonProps {
   propertyId: string;
   initialBookmarked: boolean;
+  isAuthenticated: boolean;
 }
 
 export default function BookmarkButton({
   propertyId,
   initialBookmarked,
+  isAuthenticated,
 }: BookmarkButtonProps) {
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleClick(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=/property/${propertyId}`);
+      return;
+    }
+
     setLoading(true);
     if (bookmarked) {
       const { error } = await removeBookmarkAction(propertyId);
