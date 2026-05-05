@@ -7,6 +7,9 @@ import PropertyGallery from "@/components/property/PropertyGallery";
 import BookmarkButton from "@/components/property/BookmarkButton";
 import RentEstimateWidget from "@/components/property/RentEstimateWidget";
 import NearbyLandmarks from "@/components/property/NearbyLandmarks";
+import ChatButton from "@/components/chat/ChatButton";
+import ChatPopup from "@/components/chat/ChatPopup";
+import DeleteListingButton from "@/components/property/DeleteListingButton";
 
 interface PropertyPageProps {
   params: { id: string };
@@ -55,7 +58,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
           <p className="text-3xl font-extrabold text-blue-700">
             <span className="text-xl font-bold text-gray-400">৳</span> {price}
           </p>
-          <div className="mt-4 flex gap-3">
+          <div className="mt-4 flex gap-3 flex-wrap">
              <a
               href={`/api/properties/${params.id}/pdf`}
               target="_blank"
@@ -69,6 +72,12 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
               initialBookmarked={bookmarked}
               isAuthenticated={!!user}
             />
+            {user?.id !== property.owner_id && (
+              <ChatButton 
+                propertyId={property.id} 
+                isAuthenticated={!!user} 
+              />
+            )}
           </div>
         </div>
       </div>
@@ -139,6 +148,9 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
         </div>
 
       </div>
+
+      {/* Global Popups */}
+      <ChatPopup currentUserId={user?.id} />
     </div>
   );
 }

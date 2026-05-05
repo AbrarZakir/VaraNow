@@ -9,6 +9,7 @@ export default async function HomePage() {
     getMapMarkersAction(),
   ]);
   const listings = listingsResult.data ?? [];
+  const imageMap = listingsResult.imageMap ?? {};
   const markers = mapResult.data ?? [];
 
   return (
@@ -55,7 +56,7 @@ export default async function HomePage() {
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {listings.slice(0, 4).map((p) => (
-              <PropertyCard key={p.id} property={p} />
+              <PropertyCard key={p.id} property={p} imageUrl={imageMap[p.id]} />
             ))}
           </div>
           <Link href="/search" className="mt-8 block w-full rounded-xl bg-blue-50 py-3 text-center font-medium text-blue-600 transition-colors hover:bg-blue-100 sm:hidden">

@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import type { Property } from "@/types";
 
 interface PropertyCardProps {
   property: Property;
+  imageUrl?: string;
 }
 
-export default function PropertyCard({ property }: PropertyCardProps) {
+export default function PropertyCard({ property, imageUrl }: PropertyCardProps) {
   const price = Number(property.price).toLocaleString();
   
   // Define fallback gradients just so UI doesn't look empty when missing an image
@@ -22,13 +25,24 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       href={`/property/${property.id}`}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl"
     >
-      <div className={`aspect-[4/3] w-full bg-gradient-to-br ${bgGradient} relative overflow-hidden`}>
-        {/* Placeholder image structural block */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-40 mix-blend-overlay">
-          <svg className="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-        </div>
+      <div className={`aspect-[4/3] w-full relative overflow-hidden ${imageUrl ? "bg-gray-100" : `bg-gradient-to-br ${bgGradient}`}`}>
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={property.title}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              // If image fails to load, hide it and show gradient fallback
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center opacity-40 mix-blend-overlay">
+            <svg className="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+        )}
         <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-900 shadow-sm backdrop-blur-sm">
           For {property.type}
         </div>

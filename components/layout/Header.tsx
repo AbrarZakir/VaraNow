@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import ChatNotification from "@/components/chat/ChatNotification";
 
 export default async function Header() {
   const supabase = await createClient();
@@ -22,31 +23,35 @@ export default async function Header() {
           <Link href="/search" className="text-gray-600 transition-colors hover:text-blue-600">
             Explore Properties
           </Link>
-          {user ? (
+          {user && (
             <Link href="/dashboard" className="text-gray-600 transition-colors hover:text-blue-600">
               Dashboard
-            </Link>
-          ) : (
-            <Link href="/login" className="text-gray-600 transition-colors hover:text-blue-600">
-              Log in
             </Link>
           )}
         </nav>
         <div className="flex items-center gap-4">
           {user ? (
-            <Link
-              href="/dashboard"
-              className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-black hover:shadow-md"
-            >
-              Dashboard
-            </Link>
+            <>
+              <ChatNotification />
+              <Link
+                href="/dashboard"
+                className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-black hover:shadow-md"
+              >
+                Dashboard
+              </Link>
+            </>
           ) : (
-            <Link
-              href="/signup"
-              className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-black hover:shadow-md"
-            >
-              Sign up
-            </Link>
+            <>
+              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-blue-600">
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-black hover:shadow-md"
+              >
+                Sign up
+              </Link>
+            </>
           )}
         </div>
       </div>

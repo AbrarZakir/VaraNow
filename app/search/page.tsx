@@ -42,8 +42,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     offset,
   };
 
-  const { data: listings, error } = await searchListingsAction(filters);
+  const { data: listings, error, imageMap } = await searchListingsAction(filters);
   const properties = listings ?? [];
+  const images = imageMap ?? {};
   const markers = properties.map((p) => ({
     id: p.id,
     latitude: p.latitude,
@@ -90,7 +91,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </div>
             ) : (
               properties.map((p) => (
-                <PropertyCard key={p.id} property={p} />
+                <PropertyCard key={p.id} property={p} imageUrl={images[p.id]} />
               ))
             )}
           </div>

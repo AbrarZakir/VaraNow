@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getMyListingsAction } from "@/app/actions/property";
 import PropertyCard from "@/components/property/PropertyCard";
+import PropertyCardOwnerMenu from "@/components/property/PropertyCardOwnerMenu";
 import Pagination from "@/components/layout/Pagination";
 
 const PAGE_SIZE = 12;
@@ -16,11 +17,12 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const { data: listings, count, error } = await getMyListingsAction({
+  const { data: listings, count, error, imageMap } = await getMyListingsAction({
     limit: PAGE_SIZE,
     offset,
   });
   const properties = listings ?? [];
+  const images = imageMap ?? {};
   const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
 
   return (
@@ -45,7 +47,9 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {properties.map((p) => (
-              <PropertyCard key={p.id} property={p} />
+              <PropertyCardOwnerMenu key={p.id} propertyId={p.id}>
+                <PropertyCard property={p} imageUrl={images[p.id]} />
+              </PropertyCardOwnerMenu>
             ))}
           </div>
           <Pagination

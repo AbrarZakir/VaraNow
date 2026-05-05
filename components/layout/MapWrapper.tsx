@@ -23,26 +23,42 @@ export default function MapWrapper({
   className = "h-64 w-full",
 }: MapWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     if (!containerRef.current || typeof window === "undefined") return;
-    let map: import("leaflet").Map | null = null;
+    const container = containerRef.current;
+    let cancelled = false;
+
     import("leaflet").then((L) => {
-      map = L.default.map(containerRef.current!).setView(
-        [center.lat, center.lng],
-        zoom
-      );
+      if (cancelled || !container) return;
+
+      // Destroy any existing map instance before creating a new one
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+
+      const map = L.default.map(container).setView([center.lat, center.lng], zoom);
+      mapRef.current = map;
+
       L.default.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
       }).addTo(map);
+
       markers.forEach((m) => {
         L.default.marker([m.latitude, m.longitude])
           .bindPopup(m.title)
-          .addTo(map!);
+          .addTo(map);
       });
     });
+
     return () => {
-      map?.remove();
+      cancelled = true;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, [markers, center.lat, center.lng, zoom]);
 

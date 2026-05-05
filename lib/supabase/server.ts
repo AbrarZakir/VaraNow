@@ -14,10 +14,18 @@ export async function createClient() {
           return cookieStore.get(name)?.value;
         },
         set(name: string, value: string, options: Record<string, unknown> = {}) {
-          cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2]);
+          try {
+            cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2]);
+          } catch {
+            // Called from a Server Component — cookie writes are ignored, sessions still work
+          }
         },
         remove(name: string, options: Record<string, unknown> = {}) {
-          cookieStore.set(name, "", { ...options, maxAge: 0 } as Parameters<typeof cookieStore.set>[2]);
+          try {
+            cookieStore.set(name, "", { ...options, maxAge: 0 } as Parameters<typeof cookieStore.set>[2]);
+          } catch {
+            // Called from a Server Component — cookie writes are ignored, sessions still work
+          }
         },
       },
     }
