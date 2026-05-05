@@ -12,11 +12,12 @@ import ChatPopup from "@/components/chat/ChatPopup";
 import DeleteListingButton from "@/components/property/DeleteListingButton";
 
 interface PropertyPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function PropertyDetailPage({ params }: PropertyPageProps) {
-  const { data, error } = await getPropertyDetailAction(params.id);
+  const { id } = await params;
+  const { data, error } = await getPropertyDetailAction(id);
   if (error || !data) notFound();
 
   const supabase = await createClient();
@@ -24,7 +25,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: bookmarked } = await isBookmarkedAction(params.id);
+  const { data: bookmarked } = await isBookmarkedAction(id);
 
   const { property, images, owner } = data;
   const price = Number(property.price).toLocaleString();
@@ -60,7 +61,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
           </p>
           <div className="mt-4 flex gap-3 flex-wrap">
              <a
-              href={`/api/properties/${params.id}/pdf`}
+              href={`/api/properties/${id}/pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 hover:shadow"

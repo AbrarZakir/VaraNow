@@ -4,12 +4,13 @@ import * as propertyController from "@/controllers/property.controller";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   const supabase = await createClient();
   const { data, error } = await propertyController.getPropertyDetail(
     supabase,
-    params.id
+    id
   );
   if (error || !data) {
     return NextResponse.json(

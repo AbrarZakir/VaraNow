@@ -4,12 +4,13 @@ import * as pdfController from "@/controllers/pdf.controller";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   const supabase = await createClient();
   const { data, error } = await pdfController.generatePropertyPdf(
     supabase,
-    params.id
+    id
   );
   if (error || !data) {
     return NextResponse.json(
@@ -20,7 +21,7 @@ export async function GET(
   return new NextResponse(Buffer.from(data), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="property-${params.id}.pdf"`,
+      "Content-Disposition": `attachment; filename="property-${id}.pdf"`,
     },
   });
 }
