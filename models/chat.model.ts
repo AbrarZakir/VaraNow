@@ -76,11 +76,11 @@ export async function getUserConversations(
 
   // Step 2: Fetch all related data manually to avoid complex join issues
   const convIds = conversations.map(c => c.id);
-  const propertyIds = [...new Set(conversations.map(c => c.property_id))].filter(Boolean);
-  const userIds = [...new Set([
+  const propertyIds = Array.from(new Set(conversations.map(c => c.property_id))).filter(Boolean);
+  const userIds = Array.from(new Set([
     ...conversations.map(c => c.user1_id),
     ...conversations.map(c => c.user2_id)
-  ])].filter(Boolean);
+  ])).filter(Boolean);
 
   const [
     propRes,
@@ -88,8 +88,8 @@ export async function getUserConversations(
     msgRes
   ] = await Promise.all([
     supabase.from("properties").select("id, title").in("id", propertyIds),
-    supabase.from("profiles").select("id, full_name, avatar_url, role").in("id", userIds),
-    supabase.from("messages").select("conversation_id, content, created_at, is_read, sender_id").in("conversation_id", convIds).order("created_at", { ascending: false })
+    supabase.from("profiles").select("*").in("id", userIds),
+    supabase.from("messages").select("*").in("conversation_id", convIds).order("created_at", { ascending: false })
   ]);
 
   const properties = propRes.data;
@@ -116,7 +116,7 @@ export async function getUserConversations(
       created_at: conv.created_at,
       updated_at: conv.updated_at,
       property: property || { id: conv.property_id, title: "Property" },
-      other_user: otherUser || { id: "unknown", full_name: "Unknown User", role: "seeker" as any },
+      other_user: (otherUser || { id: "unknown", full_name: "Unknown User", role: "seeker" }) as any,
       last_message: lastMessage,
     };
   });
