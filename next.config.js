@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Ensure we use a stable builder if Turbopack is failing in production
   transpilePackages: ["leaflet"],
+  experimental: {
+    // Force more efficient memory usage in the build worker
+    workerThreads: false,
+    cpus: 1
+  }
 };
 
 module.exports = nextConfig;
